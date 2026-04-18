@@ -210,7 +210,7 @@ def plot_boxplot(sensor_a, sensor_b, ax):
 
 
 def main(seed=1234):
-    """Generate data, create three plots, and save a combined figure.
+    """Generate data, create a 2×2 grid of plots, and save the figure.
 
     Parameters
     ----------
@@ -224,22 +224,46 @@ def main(seed=1234):
 
     Notes
     -----
-    Creates a 1x3 subplot figure with the scatter, overlaid histogram,
-    and side-by-side box plot (in that order), adjusts layout, and saves
-    the result to ``sensor_analysis.png`` at 150 DPI using a tight
-    bounding box.
+    Creates a 2×2 subplot figure with the scatter (top-left), overlaid
+    histogram (top-right), box plot (bottom-left), and a bottom-right
+    summary panel containing basic statistics. Saves the result to
+    ``sensor_analysis.png`` at 150 DPI using a tight bounding box.
     """
 
     # Generate the data
     sensor_a, sensor_b, timestamps = generate_data(seed)
 
-    # Create a 1x3 figure and draw each plot into its Axes
-    fig, axes = plt.subplots(1, 3, figsize=(16, 5))
-    ax_scatter, ax_hist, ax_box = axes
+    # Create a 2x2 figure and draw each plot into its Axes
+    fig, axes = plt.subplots(2, 2, figsize=(12, 8))
+    ax_scatter = axes[0, 0]
+    ax_hist = axes[0, 1]
+    ax_box = axes[1, 0]
+    ax_summary = axes[1, 1]
 
     plot_scatter(sensor_a, sensor_b, timestamps, ax_scatter)
     plot_histogram(sensor_a, sensor_b, ax_hist)
     plot_boxplot(sensor_a, sensor_b, ax_box)
+
+    # Summary statistics in the fourth panel
+    mean_a = float(sensor_a.mean())
+    std_a = float(sensor_a.std(ddof=1))
+    mean_b = float(sensor_b.mean())
+    std_b = float(sensor_b.std(ddof=1))
+    combined_mean = float(np.concatenate((sensor_a, sensor_b)).mean())
+    n = sensor_a.size
+
+    summary_lines = [
+        f"Samples per sensor: {n}",
+        "",
+        f"Sensor A — mean: {mean_a:.2f} °C, std: {std_a:.2f} °C",
+        f"Sensor B — mean: {mean_b:.2f} °C, std: {std_b:.2f} °C",
+        "",
+        f"Combined mean: {combined_mean:.2f} °C"
+    ]
+    summary_text = "\n".join(summary_lines)
+
+    ax_summary.axis('off')
+    ax_summary.text(0.01, 0.99, summary_text, va='top', ha='left', fontsize=10, family='monospace')
 
     plt.tight_layout()
     fig.savefig('sensor_analysis.png', dpi=150, bbox_inches='tight')
