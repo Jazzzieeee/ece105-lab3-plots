@@ -95,3 +95,114 @@ def plot_scatter(sensor_a, sensor_b, timestamps, ax):
     ax.legend()
     ax.grid(True, linestyle='--', alpha=0.5)
     return None
+
+
+# Create plot_histogram(sensor_a, sensor_b, ax) that draws
+# a histogram of both sensors onto the given Axes object.
+# NumPy-style docstring. Modifies ax in place, returns None.
+
+
+def plot_histogram(sensor_a, sensor_b, ax):
+    """Draw overlaid histograms for two sensors on a provided Axes.
+
+    Parameters
+    ----------
+    sensor_a : numpy.ndarray, shape (N,)
+        Temperature readings from Sensor A in degrees Celsius.
+    sensor_b : numpy.ndarray, shape (N,)
+        Temperature readings from Sensor B in degrees Celsius.
+    ax : matplotlib.axes.Axes
+        Matplotlib Axes object to draw the histograms onto. This function
+        modifies the Axes in place and returns ``None``.
+
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    Uses 30 bins and ``alpha=0.5`` so both distributions remain visible when
+    overlapped. Vertical dashed lines indicate each sensor's sample mean.
+    Colors match other plotting helpers: ``tab:blue`` for Sensor A and
+    ``tab:orange`` for Sensor B.
+    """
+
+    bins = 30
+    ax.hist(sensor_a, bins=bins, alpha=0.5, color='tab:blue', label='Sensor A')
+    ax.hist(sensor_b, bins=bins, alpha=0.5, color='tab:orange', label='Sensor B')
+    mean_a = sensor_a.mean()
+    mean_b = sensor_b.mean()
+    ax.axvline(mean_a, color='tab:blue', linestyle='--', linewidth=2, label='Sensor A mean')
+    ax.axvline(mean_b, color='tab:orange', linestyle='--', linewidth=2, label='Sensor B mean')
+    ax.set_xlabel('Temperature (°C)')
+    ax.set_ylabel('Count')
+    ax.set_title('Overlaid Histogram: Sensor Temperature Distributions')
+    ax.legend()
+    ax.grid(True, linestyle='--', alpha=0.4)
+    return None
+
+
+# Create plot_boxplot(sensor_a, sensor_b, ax) that draws
+# a box plot comparing both sensors onto the given Axes object.
+# NumPy-style docstring. Modifies ax in place, returns None.
+
+
+def plot_boxplot(sensor_a, sensor_b, ax):
+    """Draw side-by-side box plots comparing two sensors on a provided Axes.
+
+    Parameters
+    ----------
+    sensor_a : numpy.ndarray, shape (N,)
+        Temperature readings from Sensor A in degrees Celsius.
+    sensor_b : numpy.ndarray, shape (N,)
+        Temperature readings from Sensor B in degrees Celsius.
+    ax : matplotlib.axes.Axes
+        Matplotlib Axes object to draw the box plots onto. This function
+        modifies the Axes in place and returns ``None``.
+
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    The function colors the boxes to match other helpers (``tab:blue`` and
+    ``tab:orange``), emphasizes the medians, and draws a horizontal dashed
+    line at the overall mean of both sensors combined. A concise legend is
+    created using proxy artists so the box colors and the mean line are
+    labeled.
+    """
+
+    sensor_a = np.asarray(sensor_a, dtype=float)
+    sensor_b = np.asarray(sensor_b, dtype=float)
+
+    data = [sensor_a, sensor_b]
+    labels = ['Sensor A', 'Sensor B']
+
+    box = ax.boxplot(data, labels=labels, patch_artist=True, widths=0.6)
+
+    colors = ['tab:blue', 'tab:orange']
+    for patch, color in zip(box['boxes'], colors):
+        patch.set_facecolor(color)
+
+    for median in box['medians']:
+        median.set_color('black')
+        median.set_linewidth(2)
+
+    overall_mean = np.concatenate((sensor_a, sensor_b)).mean()
+    ax.axhline(overall_mean, color='red', linestyle='--', linewidth=1.5, label='Overall mean')
+
+    # Create legend proxies for boxes and mean line
+    from matplotlib.patches import Patch
+    from matplotlib.lines import Line2D
+    handles = [
+        Patch(facecolor='tab:blue', label='Sensor A'),
+        Patch(facecolor='tab:orange', label='Sensor B'),
+        Line2D([0], [0], color='red', linestyle='--', label='Overall mean')
+    ]
+    ax.legend(handles=handles)
+
+    ax.set_ylabel('Temperature (deg C)')
+    ax.set_title('Box Plot: Sensor Temperature Comparison')
+    ax.grid(True, axis='y', linestyle='--', alpha=0.4)
+    return None
