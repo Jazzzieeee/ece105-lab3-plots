@@ -14,6 +14,7 @@ Usage
 # and timestamps arrays with the same parameters as in the notebook.
 # Use NumPy-style docstring with Parameters and Returns sections.
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 def generate_data(seed):
@@ -206,3 +207,50 @@ def plot_boxplot(sensor_a, sensor_b, ax):
     ax.set_title('Box Plot: Sensor Temperature Comparison')
     ax.grid(True, axis='y', linestyle='--', alpha=0.4)
     return None
+
+
+def main(seed=1234):
+    """Generate data, create three plots, and save a combined figure.
+
+    Parameters
+    ----------
+    seed : int or None, optional
+        Seed passed to :func:`generate_data` for reproducible output.
+        Default is ``1234`` to match the notebook example.
+
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    Creates a 1x3 subplot figure with the scatter, overlaid histogram,
+    and side-by-side box plot (in that order), adjusts layout, and saves
+    the result to ``sensor_analysis.png`` at 150 DPI using a tight
+    bounding box.
+    """
+
+    # Generate the data
+    sensor_a, sensor_b, timestamps = generate_data(seed)
+
+    # Create a 1x3 figure and draw each plot into its Axes
+    fig, axes = plt.subplots(1, 3, figsize=(16, 5))
+    ax_scatter, ax_hist, ax_box = axes
+
+    plot_scatter(sensor_a, sensor_b, timestamps, ax_scatter)
+    plot_histogram(sensor_a, sensor_b, ax_hist)
+    plot_boxplot(sensor_a, sensor_b, ax_box)
+
+    plt.tight_layout()
+    fig.savefig('sensor_analysis.png', dpi=150, bbox_inches='tight')
+    plt.close(fig)
+    return None
+
+
+if __name__ == '__main__':
+    main()
+
+
+# Create main() that generates data, creates a 1x3 subplot figure,
+# calls each plot function, adjusts layout, and saves as sensor_analysis.png
+# at 150 DPI with tight bounding box.
