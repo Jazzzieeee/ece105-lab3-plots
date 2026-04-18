@@ -53,3 +53,45 @@ def generate_data(seed):
     sensor_b = rng.normal(loc=27.0, scale=4.5, size=n_readings).astype(np.float64)
 
     return sensor_a, sensor_b, timestamps
+
+
+# Create plot_scatter(sensor_a, sensor_b, timestamps, ax) that draws
+# the scatter plot from the notebook onto the given Axes object.
+# NumPy-style docstring. Modifies ax in place, returns None.
+
+
+def plot_scatter(sensor_a, sensor_b, timestamps, ax):
+    """Draw scatter plots of two sensors versus time on a provided Axes.
+
+    Parameters
+    ----------
+    sensor_a : numpy.ndarray, shape (N,)
+        Temperature readings from Sensor A in degrees Celsius.
+    sensor_b : numpy.ndarray, shape (N,)
+        Temperature readings from Sensor B in degrees Celsius.
+    timestamps : numpy.ndarray, shape (N,)
+        Timestamps in seconds corresponding to each reading (expected in
+        the range 0 to 10). This need not be sorted, but typically is.
+    ax : matplotlib.axes.Axes
+        Matplotlib Axes object to draw the scatter plot onto. This function
+        modifies the Axes in place and returns ``None``.
+
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    The visual styling mirrors the notebook: Sensor A uses ``tab:blue``,
+    Sensor B uses ``tab:orange``, marker size is chosen for readability,
+    and a dashed grid is enabled for easier reading of overlapping points.
+    """
+
+    ax.scatter(timestamps, sensor_a, c='tab:blue', label='Sensor A', s=40, alpha=0.8)
+    ax.scatter(timestamps, sensor_b, c='tab:orange', label='Sensor B', s=40, alpha=0.8)
+    ax.set_xlabel('Time (s)')
+    ax.set_ylabel('Temperature (°C)')
+    ax.set_title('Scatter: Temperature vs Time (Sensor A & B)')
+    ax.legend()
+    ax.grid(True, linestyle='--', alpha=0.5)
+    return None
